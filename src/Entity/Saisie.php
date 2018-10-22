@@ -43,10 +43,16 @@ class Saisie
      */
     private $Entreprise;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Setting", mappedBy="Saisie")
+     */
+    private $setting;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
         $this->Entreprise = new ArrayCollection();
+        $this->setting = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +145,34 @@ class Saisie
         if ($this->Entreprise->contains($entreprise)) {
             $this->Entreprise->removeElement($entreprise);
             $entreprise->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Setting[]
+     */
+    public function getSetting(): Collection
+    {
+        return $this->setting;
+    }
+
+    public function addSetting(Setting $setting): self
+    {
+        if (!$this->setting->contains($setting)) {
+            $this->setting[] = $setting;
+            $setting->addSaisie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSetting(Setting $setting): self
+    {
+        if ($this->setting->contains($setting)) {
+            $this->setting->removeElement($setting);
+            $setting->removeSaisie($this);
         }
 
         return $this;

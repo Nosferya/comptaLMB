@@ -28,9 +28,15 @@ class Entreprise
      */
     private $User;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="Entreprise")
+     */
+    private $UserEntreprise;
+
     public function __construct()
     {
         $this->User = new ArrayCollection();
+        $this->UserEntreprise = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -71,6 +77,32 @@ class Entreprise
     {
         if ($this->User->contains($user)) {
             $this->User->removeElement($user);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUserEntreprise(): Collection
+    {
+        return $this->UserEntreprise;
+    }
+
+    public function addUserEntreprise(User $userEntreprise): self
+    {
+        if (!$this->UserEntreprise->contains($userEntreprise)) {
+            $this->UserEntreprise[] = $userEntreprise;
+        }
+
+        return $this;
+    }
+
+    public function removeUserEntreprise(User $userEntreprise): self
+    {
+        if ($this->UserEntreprise->contains($userEntreprise)) {
+            $this->UserEntreprise->removeElement($userEntreprise);
         }
 
         return $this;

@@ -2,14 +2,16 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -63,9 +65,26 @@ class User
      */
     private $Saisies;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Entreprise", mappedBy="UserEntreprise")
+     */
+    private $Entreprise;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Setting", mappedBy="User")
+     */
+    private $Setting;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $nickname;
+
     public function __construct()
     {
         $this->Saisies = new ArrayCollection();
+        $this->Entreprise = new ArrayCollection();
+        $this->Setting = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -195,5 +214,92 @@ class User
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Entreprise[]
+     */
+    public function getEntreprise(): Collection
+    {
+        return $this->Entreprise;
+    }
+
+    public function addEntreprise(Entreprise $entreprise): self
+    {
+        if (!$this->Entreprise->contains($entreprise)) {
+            $this->Entreprise[] = $entreprise;
+            $entreprise->addUserEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEntreprise(Entreprise $entreprise): self
+    {
+        if ($this->Entreprise->contains($entreprise)) {
+            $this->Entreprise->removeElement($entreprise);
+            $entreprise->removeUserEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Setting[]
+     */
+    public function getSetting(): Collection
+    {
+        return $this->Setting;
+    }
+
+    public function addSetting(Setting $setting): self
+    {
+        if (!$this->Setting->contains($setting)) {
+            $this->Setting[] = $setting;
+            $setting->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSetting(Setting $setting): self
+    {
+        if ($this->Setting->contains($setting)) {
+            $this->Setting->removeElement($setting);
+            $setting->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
+    }
+    public function getUsername(): ?string
+    {
+        return $this->nickname;
+    }
+    
+    public function getPassword(): ?string
+    {
+        return $this->passwordUser;
+    }
+    public function eraseCredentials()
+    {
+    }
+    public function getSalt()
+    {
+    }
+    public function getRoles()
+    {
+     return ['ROLE_USER'];
     }
 }
