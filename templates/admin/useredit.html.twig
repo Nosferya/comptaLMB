@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modification de l'utilisateur {{user.nickname}} {% endblock %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+
+<div class="container-fluid">
+    <h1>Modification de l'utilisateur {{user.nickname}}</h1>
+    {{form_start(form)}}
+{{form_widget(form)}}
+<button type="submit" class="btn btn-primary">
+    <i class="fa fa-check"></i>
+    Enregistrer les modifications de l'utilisateur 
+</button>
+{{form_end(form)}}
+</div>
+
+{% endblock %}

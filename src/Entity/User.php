@@ -5,11 +5,16 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(
+ * fields={"nickname"},
+ * message="le nickname est déjà utilisé"
+ * )
  */
 class User implements UserInterface
 {
@@ -37,6 +42,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(min = "8", minMessage= "Votre mot de passe doit contenir 8 caractères", max = "50", maxMessage="Votre mot de passe est trop long !")
      */
     private $passwordUser;
 
@@ -60,10 +66,9 @@ class User implements UserInterface
      */
     private $niveau;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Saisie", mappedBy="user")
-     */
-    private $Saisies;
+    private $userRole;
+
+ 
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Entreprise", mappedBy="UserEntreprise")
@@ -80,11 +85,29 @@ class User implements UserInterface
      */
     private $nickname;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $firstLogin;
+
+    /** 
+    * @Assert\EqualTo(propertyPath="PasswordUser", message="vos mots de passe ne sont pas identiques")
+    */
+
+    public $confirmPassword;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Saisie", mappedBy="User", cascade={"remove"})
+     */
+    private $saisies;
+
     public function __construct()
     {
         $this->Saisies = new ArrayCollection();
         $this->Entreprise = new ArrayCollection();
         $this->Setting = new ArrayCollection();
+        $this->saisies = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -176,9 +199,9 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getNiveau(): ?Niveau
+    public function getNiveau():?Niveau
     {
-        return $this->niveau;
+        return  $this->niveau;
     }
 
     public function setNiveau(?Niveau $niveau): self
@@ -188,34 +211,7 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Saisie[]
-     */
-    public function getSaisies(): Collection
-    {
-        return $this->Saisies;
-    }
-
-    public function addSaisy(Saisie $saisy): self
-    {
-        if (!$this->Saisies->contains($saisy)) {
-            $this->Saisies[] = $saisy;
-            $saisy->addUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSaisy(Saisie $saisy): self
-    {
-        if ($this->Saisies->contains($saisy)) {
-            $this->Saisies->removeElement($saisy);
-            $saisy->removeUser($this);
-        }
-
-        return $this;
-    }
-
+    
     /**
      * @return Collection|Entreprise[]
      */
@@ -292,6 +288,8 @@ class User implements UserInterface
     {
         return $this->passwordUser;
     }
+
+    
     public function eraseCredentials()
     {
     }
@@ -300,6 +298,53 @@ class User implements UserInterface
     }
     public function getRoles()
     {
-     return ['ROLE_USER'];
+        $roles[] = $this->niveau->getNomNiveau();
+        
+
+
+     return $roles;
+    }
+
+    public function getFirstLogin(): ?int
+    {
+        return $this->firstLogin;
+    }
+
+    public function setFirstLogin(int $firstLogin): self
+    {
+        $this->firstLogin = $firstLogin;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Saisie[]
+     */
+    public function getSaisies(): Collection
+    {
+        return $this->saisies;
+    }
+
+    public function addSaisy(Saisie $saisy): self
+    {
+        if (!$this->saisies->contains($saisy)) {
+            $this->saisies[] = $saisy;
+            $saisy->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSaisy(Saisie $saisy): self
+    {
+        if ($this->saisies->contains($saisy)) {
+            $this->saisies->removeElement($saisy);
+            // set the owning side to null (unless already changed)
+            if ($saisy->getUser() === $this) {
+                $saisy->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

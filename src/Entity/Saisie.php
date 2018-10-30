@@ -33,10 +33,7 @@ class Saisie
      */
     private $achatEntreprise;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="Saisies")
-     */
-    private $user;
+  
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Entreprise", mappedBy="User")
@@ -47,6 +44,11 @@ class Saisie
      * @ORM\ManyToMany(targetEntity="App\Entity\Setting", mappedBy="Saisie")
      */
     private $setting;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="saisies")
+     */
+    private $User;
 
     public function __construct()
     {
@@ -96,31 +98,6 @@ class Saisie
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUser(): Collection
-    {
-        return $this->user;
-    }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->user->contains($user)) {
-            $this->user[] = $user;
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->user->contains($user)) {
-            $this->user->removeElement($user);
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection|Entreprise[]
@@ -174,6 +151,18 @@ class Saisie
             $this->setting->removeElement($setting);
             $setting->removeSaisie($this);
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->User;
+    }
+
+    public function setUser(?User $User): self
+    {
+        $this->User = $User;
 
         return $this;
     }

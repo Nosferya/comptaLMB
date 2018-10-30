@@ -21,7 +21,8 @@ security:
             form_login: 
                 login_path: login
                 check_path: login
-                default_target_path: saisie
+                default_target_path: redirect
+
 
             # activate different ways to authenticate
 

@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}Compta LMB{% endblock %}</title>
         <link rel="stylesheet" href="https://bootswatch.com/4/spacelab/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
@@ -29,14 +30,31 @@
                         <li class="nav-item">
                           <a class="nav-link" href="{{path ('grades')}}">Grades</a>
                         </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="{{path ('settings')}}">Settings</a>
+                        </li>
                       </ul>
                     </div>
                   </nav>
                   {% endif %}
                   <div class="container">
-                        {% block body %}{% endblock %}
+
+
+                    {% for label, messages in app.flashes %}
+                    <div class="container">
+                      <div class="alert alert-{{ label }}">
+                        {% for message in messages %}
+                        <p>{{ message | raw }}</p>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    {% endfor %}
+                    
+
+                    
+                    {% block body %}{% endblock %}
                   </div>
-        
+                  
                     <script src="https://bootswatch.com/_vendor/jquery/dist/jquery.min.js"></script>
                     <script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
                     <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>

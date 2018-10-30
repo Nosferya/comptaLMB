@@ -1,2 +1,12 @@
 {% extends 'base.html.twig' %}
 {% block title %}Saisie{% endblock %}
+
+{% form_theme Saisie 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+{{form_start(Saisie)}}
+{{form_widget(Saisie)}}
+<button type="submit" class="btn btn-success">Valider la tournée</button>
+{{form_end(Saisie)}}
+
+{% endblock %}
