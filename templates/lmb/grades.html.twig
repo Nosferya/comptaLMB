@@ -26,7 +26,9 @@
                     <td>{{Grade.pourcentPnj}}</td>
                     <td>
                         <a href="{{ path ('admin_grade_edit',{'id':Grade.id}) }}"class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                        {% if app.user.roles[0]== "admin" %}
                         <a href="{{ path ('admin_grade_delete', { 'id':Grade.id}) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

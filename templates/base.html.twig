@@ -21,18 +21,25 @@
                         <li class="nav-item ">
                           <a class="nav-link" href="{{path ('saisie')}}">Saisie</a>
                         </li>
+                        {% if app.user.roles[0]== "admin" or app.user.roles[0]== "comptable" %}
                         <li class="nav-item">
                           <a class="nav-link" href="{{path ('primes')}}">Primes</a>
                         </li>
+                        {% endif %}
+                        {% if app.user.roles[0]== "admin" or app.user.roles[0]=="DRH" %}
                         <li class="nav-item">
                           <a class="nav-link" href="{{path ('admin')}}">Utilisateurs</a>
                         </li>
+                        {% endif %}
+                        {% if app.user.roles[0]== "admin" %}
                         <li class="nav-item">
                           <a class="nav-link" href="{{path ('grades')}}">Grades</a>
                         </li>
+                        
                         <li class="nav-item">
                           <a class="nav-link" href="{{path ('settings')}}">Settings</a>
                         </li>
+                        {% endif %}
                       </ul>
                     </div>
                   </nav>

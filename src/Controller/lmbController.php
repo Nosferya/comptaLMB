@@ -5,12 +5,14 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Grade;
 use App\Entity\Saisie;
+use App\Entity\Setting;
 use App\Form\GradeType;
 use App\Form\SaisieType;
 use App\Form\RegistrationType;
 use App\Form\ResetPasswordType;
 use App\Repository\UserRepository;
 use App\Repository\GradeRepository;
+use App\Repository\SaisieRepository;
 use App\Repository\SettingRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -77,7 +79,7 @@ class lmbController extends AbstractController
     /**
      * @Route("/saisie", name="saisie")
      */
-    public function saisie(ObjectManager $manager, Request $request)
+    public function saisie(ObjectManager $manager, Request $request, SaisieRepository $repo)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user =$this->getUser();
@@ -89,26 +91,170 @@ class lmbController extends AbstractController
            $entity= $manager->getRepository(User::class)->find($id);
            $entity->getId();
            $saisie->setUser($entity);
+           $now= new \DateTime();
+           $saisie->setDateSaisie($now);
+           $vente =$saisie->getVenteGrossiste();
+            $prix= $manager->getRepository(Setting::class)->findOneBy([
+                'id'=> 1,
+
+            ]);
+            $prime=$entity->getPrimeUser();
+            $prix=$prix->getReventeUnitaire();
+
+            $idgrade=$entity->getGrade();
+            $pourcent= $manager->getRepository(Grade::class)->findOneBy([
+                'id'=>$idgrade,
+            ]);
+            $pourcent = $pourcent->getPourcentPnj();
             
+            $calcul = $prix * $vente;
+            $calcul=$calcul*($pourcent/100);
+            $calcul=$calcul+$prime;
+            
+
+            $entity->setPrimeUser($calcul);
            
             $manager->persist($saisie);
             $manager->flush();
+
+        
         }
+        $saisie=$this->getDoctrine()->getRepository(Saisie::class);
+        $liste = $saisie->findBy(
+            ['User'=>$id],
+            ['id'=>'DESC']
+
+        );
+        $listerepo= $repo->findById();
 
         return $this->render('lmb/saisie.html.twig',[
-            'Saisie' =>$form->CreateView()
+            'Saisie' =>$form->CreateView(),
+            'user'=>$liste,
+            'allSaisie'=>$listerepo
+
+            
         ]);
 
     }
 
+
+
+        /**
+     * 
+     * @Route("/user/saisie/{id}/edit", name="user_saisie_edit")
+     * 
+     * @param Saisie $saisie
+     * @return Response
+     */
+    public function editSaisie(Saisie $saisie, Request $request, ObjectManager $manager){
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $saisieNow = $saisie->getVenteGrossiste();
+        $prix= $manager->getRepository(Setting::class)->findOneBy([
+            'id'=> 1,
+
+        ]);
+        $user =$this->getUser();
+        $id = $user->getId();
+        $entity= $manager->getRepository(User::class)->find($id);
+        $form = $this->CreateForm(SaisieType::class, $saisie);
+        $prime=$entity->getPrimeUser();
+            
+        $prix=$prix->getReventeUnitaire();
+
+            
+        $idgrade=$entity->getGrade();
+            
+        $pourcent= $manager->getRepository(Grade::class)->findOneBy([
+                
+            'id'=>$idgrade,
+            ]);
+            $pourcent = $pourcent->getPourcentPnj();
+            
+      
+
+        $form->handleRequest($request);
+        
+        if($form->isSubmitted() && $form->isValid()){
+            $newSaisie = $saisie->getVenteGrossiste();
+            if ($saisieNow < $newSaisie){
+                $diff = ($newSaisie-$saisieNow);
+                $calcul = $prix * $diff;
+                $calcul=$calcul*($pourcent/100);
+                $calcul=$calcul+$prime;
+                
+                $entity->setPrimeUser($calcul);
+           
+                $manager->persist($saisie);
+                $manager->flush();
+
+                return $this-redirectToRoute('saisie');
+    
+            }
+
+            elseif ($saisieNow > $newSaisie){
+                $diff = ($saisieNow-$newSaisie);
+
+                $calcul = $prix * $diff;
+                $calcul=$calcul*($pourcent/100);
+                $calcul=$prime-$calcul;
+                
+                $entity->setPrimeUser($calcul);
+           
+                $manager->persist($saisie);
+                $manager->flush();
+
+                return $this-redirectToRoute('saisie');
+            }
+
+            else {
+                return $this-redirectToRoute('saisie');
+            }
+
+        }
+
+        return $this->render('lmb/saisieedit.html.twig',[
+            'saisie'=>$saisie,
+            'form'=>$form->createView()
+        ]);
+  
+    }
+
+
+
     /**
      * @Route("/primes", name="primes")
      */
-     public function prime()
+     public function prime(UserRepository $repo)
      {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-         return $this->render('lmb/prime.html.twig');
+        $user=$this->getUser()->getRoles()[0];
+        if($user === "admin" || $user ==="comptable"){
+            
+            return $this->render('lmb/prime.html.twig', [
+                'primes' => $repo->findAll()
+            ]);
+        }
+        else {
+            $this->addFlash(
+                'danger',
+                "Vous n'êtes pas autorisé à accéder à cette page "
+            );
+            return $this->redirectToRoute("error403");
+
+        }
      }
+
+
+    /**
+     * @Route("/ForbiddenAccess403", name="error403")
+     */
+    public function error403()
+    {
+        return $this->render('lmb/403forbidden.html.twig');
+    }
+
+
 
      /**
      * @Route("/utilisateurs", name="utilisateurs")
@@ -141,10 +287,23 @@ class lmbController extends AbstractController
             );
 
         }
-        return $this->render('lmb/grades.html.twig', [
-            'formGrade' =>$form->CreateView(),
-            'ads' => $repo->findAll()
-        ]);
+        $user=$this->getUser()->getRoles()[0];
+        if($user === "admin"){
+            
+            return $this->render('lmb/grades.html.twig', [
+                'formGrade' =>$form->CreateView(),
+                'ads' => $repo->findAll()
+            ]);
+            
+        }
+        else {
+            $this->addFlash(
+                'danger',
+                "Vous n'êtes pas autorisé à accéder à cette page "
+            );
+            return $this->redirectToRoute("error403");
+
+        }
 
     }
  /**
@@ -154,9 +313,22 @@ class lmbController extends AbstractController
     public function settings(SettingRepository $repo)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        return $this->render('lmb/settings.html.twig',[
-            'setting' => $repo->findAll()
-        ]);
+        $user=$this->getUser()->getRoles()[0];
+        if($user === "admin"){
+            
+            return $this->render('lmb/settings.html.twig',[
+                'setting' => $repo->findAll()
+            ]);
+
+        }
+        else {
+            $this->addFlash(
+                'danger',
+                "Vous n'êtes pas autorisé à accéder à cette page "
+            );
+            return $this->redirectToRoute("error403");
+
+        }
     }
 
       /**
@@ -168,29 +340,47 @@ class lmbController extends AbstractController
      */
     public function edit(Grade $grade, Request $request, ObjectManager $manager){
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $form = $this->createForm(GradeType::class, $grade);
 
-        $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
-            $manager->persist($grade);
-            $manager->flush();
+        $role=$this->getUser()->getRoles()[0];
+        if($role === "admin"){
             
-            $this->addFlash(
-                'success',
-                "Le grade <strong>{$grade->getNomGrade()}</strong> a bien été modifié"
-            );
 
-           return $this->redirectToRoute('grades');
 
-            
+            $form = $this->createForm(GradeType::class, $grade);
+    
+            $form->handleRequest($request);
+    
+            if($form->isSubmitted() && $form->isValid()){
+                $manager->persist($grade);
+                $manager->flush();
+                
+                $this->addFlash(
+                    'success',
+                    "Le grade <strong>{$grade->getNomGrade()}</strong> a bien été modifié"
+                );
+    
+               return $this->redirectToRoute('grades');
+    
+                
+            }
+    
+            return $this->render('admin/gradeedit.html.twig', [
+                'grade' =>$grade,
+                'form'=> $form->createView()
+            ]);
         }
 
-        return $this->render('admin/gradeedit.html.twig', [
-            'grade' =>$grade,
-            'form'=> $form->createView()
-        ]);
+        else {
+            $this->addFlash(
+                'danger',
+                "Vous n'êtes pas autorisé à accéder à cette page "
+            );
+            return $this->redirectToRoute("error403");
+
+        }
     }
+
 
     /**
      * 
@@ -203,25 +393,40 @@ class lmbController extends AbstractController
     public function delete(Grade $grade,ObjectManager $manager){
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        if(count($grade->getUser())> 0){
-           $this->addFlash(
-               'warning',
-               "Vous ne pouvez pas supprimer le grade <strong> {$grade->getNomGrade() }</strong> car il est associé à un utilisateur."
-           ) ;
-        }
+        $role=$this->getUser()->getRoles()[0];
+        if($role === "admin"){
+            
+            
+                    if(count($grade->getUser())> 0){
+                       $this->addFlash(
+                           'warning',
+                           "Vous ne pouvez pas supprimer le grade <strong> {$grade->getNomGrade() }</strong> car il est associé à un utilisateur."
+                       ) ;
+                    }
+                    else {
+            
+                        $manager->remove($grade);
+                        $manager->flush();
+                
+                        $this->addFlash(
+                            'success',
+                            "Le grade <strong>{$grade->getNomGrade()}</strong> a bien été supprimé !"
+                        );
+            
+                    }
+            
+                    return $this->redirectToRoute('grades');
+                }
+  
+
         else {
-
-            $manager->remove($grade);
-            $manager->flush();
-    
             $this->addFlash(
-                'success',
-                "Le grade <strong>{$grade->getNomGrade()}</strong> a bien été supprimé !"
+                'danger',
+                "Vous n'êtes pas autorisé à accéder à cette page "
             );
+            return $this->redirectToRoute("error403");
 
         }
-
-        return $this->redirectToRoute('grades');
     }
 
 }

@@ -50,6 +50,11 @@ class Saisie
      */
     private $User;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateSaisie;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -163,6 +168,18 @@ class Saisie
     public function setUser(?User $User): self
     {
         $this->User = $User;
+
+        return $this;
+    }
+
+    public function getDateSaisie(): ?\DateTimeInterface
+    {
+        return $this->dateSaisie;
+    }
+
+    public function setDateSaisie(?\DateTimeInterface $dateSaisie): self
+    {
+        $this->dateSaisie = $dateSaisie;
 
         return $this;
     }

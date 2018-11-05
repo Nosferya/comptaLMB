@@ -9,4 +9,57 @@
 <button type="submit" class="btn btn-success">Valider la tournée</button>
 {{form_end(Saisie)}}
 
+
+<h1 class="mt-5">Mes  saisies</h1>
+
+<table class="table table-hover ">
+    <thead>
+        <tr>
+            <th>Date de la saisie</th>
+            <th>Vente</th>
+            <th>Modifications</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for Users in user  %}
+        <tr>
+            <th>{{Users.dateSaisie | date ('d/m/Y H:i')}}</th>
+            <th>{{Users.venteGrossiste}}</th>
+            <th>
+                    <a href="{{path ('user_saisie_edit', {'id': Users.id}) }}" class="btn btn-primary" title="Editer la saisie"><i class="fa fa-edit"></i></a>
+
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if app.user.roles[0]== "admin" or app.user.roles[0]== "DRH" %}
+<hr class="mt-5">
+<h1 >Saisies des Utilisateurs - PARTIE ADMIN</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Date de la saisie</th>
+            <th>Vente</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for allsaisie in allSaisie %}
+        <tr>
+            <th>{{allsaisie.user.prenomUser}}</th>
+            <th>{{allsaisie.user.nomUser}}</th>
+            <th>{{allsaisie.dateSaisie | date ('d/m/Y H:i')}}</th>
+            <th>{{allsaisie.venteGrossiste}}</th>
+        </tr>
+        {%  endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+
 {% endblock %}

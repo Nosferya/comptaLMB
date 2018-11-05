@@ -47,4 +47,13 @@ class SaisieRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function findById()
+    {
+        $qb = $this->createQueryBuilder('a')
+                   ->orderBy('a.id', 'DESC');
+        $query = $qb->getQuery();
+    
+        return $query->getResult();
+    }
 }
+

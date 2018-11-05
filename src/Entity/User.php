@@ -101,12 +101,18 @@ class User implements UserInterface
      */
     private $saisies;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Historique", mappedBy="User")
+     */
+    private $historiques;
+
     public function __construct()
     {
         $this->Saisies = new ArrayCollection();
         $this->Entreprise = new ArrayCollection();
         $this->Setting = new ArrayCollection();
         $this->saisies = new ArrayCollection();
+        $this->historiques = new ArrayCollection();
 
     }
 
@@ -342,6 +348,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($saisy->getUser() === $this) {
                 $saisy->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Historique[]
+     */
+    public function getHistoriques(): Collection
+    {
+        return $this->historiques;
+    }
+
+    public function addHistorique(Historique $historique): self
+    {
+        if (!$this->historiques->contains($historique)) {
+            $this->historiques[] = $historique;
+            $historique->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistorique(Historique $historique): self
+    {
+        if ($this->historiques->contains($historique)) {
+            $this->historiques->removeElement($historique);
+            // set the owning side to null (unless already changed)
+            if ($historique->getUser() === $this) {
+                $historique->setUser(null);
             }
         }
 
