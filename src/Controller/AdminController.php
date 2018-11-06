@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Historique;
 use App\Form\RegistrationType;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,7 @@ class AdminController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
+        $password=$user->setPasswordUser("adminadmin");
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
@@ -72,8 +74,8 @@ class AdminController extends AbstractController
     
     
             if($form->isSubmitted() && $form->isValid()){
-                $hash = $encoder->encodePassword($user, $user->getPasswordUser());
-                $user->setPasswordUser($hash);
+                // $hash = $encoder->encodePassword($user, $user->getPasswordUser());
+                // $user->setPasswordUser($hash);
                 $manager->persist($user);
                 $manager->flush();
     
@@ -103,6 +105,46 @@ class AdminController extends AbstractController
             'form'=> $form->createView()
         ]);
     }
+
+
+        /**
+     * 
+     * @Route("/admin/prime/{id}/pay", name="admin_prime_pay")
+     * 
+     * @param User $user
+     * @return Response
+     */
+    public function pay(User $user, Request $request, ObjectManager $manager){
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $role=$this->getUser()->getRoles()[0];
+        if($role === "admin" || $role ==="comptable"){
+            $historique = new Historique;
+            $prime =$user->getPrimeUser();
+            $id=$user->getId();
+            $now=new \DateTime();
+            $historique->setPrime($prime);
+            $historique->setDatePaiement($now);
+            $historique->setUser($user);
+            $user->setPrimeUser(0);
+
+            $manager->persist($historique);
+            $manager->flush();
+
+            return $this->redirectToRoute('primes');
+
+
+    }
+    else {
+        $this->addFlash(
+            'danger',
+            "Vous n'êtes pas autorisé à accéder à cette page "
+        );
+        return $this->redirectToRoute("error403");
+    }
+
+}
 
 
     /**

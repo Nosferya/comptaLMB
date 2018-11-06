@@ -117,7 +117,12 @@ class lmbController extends AbstractController
             $manager->persist($saisie);
             $manager->flush();
 
-        
+            $this->addFlash(
+                'success',
+                'La saisie a bien été enregistrée !' 
+
+            );
+
         }
         $saisie=$this->getDoctrine()->getRepository(Saisie::class);
         $liste = $saisie->findBy(
@@ -203,6 +208,13 @@ class lmbController extends AbstractController
            
                 $manager->persist($saisie);
                 $manager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'La saisie a bien été modifiée !' 
+
+                );
+
 
                 return $this-redirectToRoute('saisie');
             }

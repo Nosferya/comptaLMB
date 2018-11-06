@@ -20,7 +20,7 @@ class RegistrationType extends AbstractType
             ->add('prenomUser')
             ->add('nomUser')
             ->add('telUser', TextType::class)
-            ->add('passwordUser', PasswordType::class)
+            // ->add('passwordUser', PasswordType::class)
             ->add('nickname')    
             ->add('grade', EntityType::class, array(
 

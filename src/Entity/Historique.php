@@ -26,6 +26,11 @@ class Historique
      */
     private $User;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $prime;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -51,6 +56,18 @@ class Historique
     public function setUser(?User $User): self
     {
         $this->User = $User;
+
+        return $this;
+    }
+
+    public function getPrime(): ?int
+    {
+        return $this->prime;
+    }
+
+    public function setPrime(?int $prime): self
+    {
+        $this->prime = $prime;
 
         return $this;
     }

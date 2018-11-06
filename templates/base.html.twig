@@ -3,9 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Compta LMB{% endblock %}</title>
+        {% block stylesheets %}
         <link rel="stylesheet" href="https://bootswatch.com/4/spacelab/bootstrap.min.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-        {% block stylesheets %}{% endblock %}
+        {% endblock %}
     </head>
     <body>
       {% if app.request.get('_route')!= 'login' %}
@@ -61,10 +62,12 @@
                     
                     {% block body %}{% endblock %}
                   </div>
+                  {% block javascripts %}
                   
-                    <script src="https://bootswatch.com/_vendor/jquery/dist/jquery.min.js"></script>
-                    <script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
-                    <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-        {% block javascripts %}{% endblock %}
+                  <script src="https://bootswatch.com/_vendor/jquery/dist/jquery.min.js"></script>
+                  <script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
+                  <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+                  
+                    {% endblock %}
     </body>
 </html>
