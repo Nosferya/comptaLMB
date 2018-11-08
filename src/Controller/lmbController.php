@@ -52,6 +52,7 @@ class lmbController extends AbstractController
      */
     public function resetpassword(ObjectManager $manager, Request $request, UserPasswordEncoderInterface $encoder)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user =$this->getUser();
         $id = $user->getId();
         $form = $this->CreateForm(ResetPasswordType::class);

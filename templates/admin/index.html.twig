@@ -1,54 +1,117 @@
 {% extends 'base.html.twig' %}
 {% form_theme form 'bootstrap_4_layout.html.twig' %}
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/user.css') }}">
+{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
     <h1 class="my-5">Gestion des Utilisateurs</h1>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Téléphone</th>
+                    <th>Date d'inscription</th>
+                    <th>Grade</th>
+                    <th>Rang</th>
+                    <th>Nickname</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Prénom</th>
-                <th>Nom</th>
-                <th>Téléphone</th>
-                <th>Date d'inscription</th>
-                <th>Grade</th>
-                <th>Rang</th>
-                <th>Nickname</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for User in ads %}
-            <tr>
-                <td>{{User.id}}</td>
-                <td>{{User.prenomUser}}</td>
-                <td>{{User.nomUser}}</td>
-                <td>{{User.telUser}}</td>
-                <td>{{User.dateInscription | date('d/m/Y')}}</td>
-                <td>{{User.Grade.nomGrade}}</td>
-                <td>{{User.Niveau.nomNiveau}}</td>
-                <td>{{User.Nickname}}</td>
-                <td>
-                    <a href="{{ path('admin_user_edit', {'id': User.id})}} " class="btn btn-primary" title="Editer l'utilisateur"><i class="fa fa-edit"></i></a>
-                    {% if app.user.roles[0]== "admin" %}
-                    <a href="{{ path('admin_user_delete', {'id':User.id})}}" class="btn btn-danger" title="Supprimer l'utilisateur"><i class="fa fa-trash"></i></a>
-                    {% endif %}
-                    <a href="{{path ('admin_user_resetpassword', {'id': User.id})}}" class="btn btn-info" title="Reset le mot de passe"><i class="fa fa-unlock"></i></a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <tbody>
+                {% for User in ads %}
+                <tr>
+                    <td>{{User.prenomUser}}</td>
+                    <td>{{User.nomUser}}</td>
+                    <td>{{User.telUser}}</td>
+                    <td>{{User.dateInscription | date('d/m/Y')}}</td>
+                    <td>{{User.Grade.nomGrade}}</td>
+                    <td>{{User.Niveau.nomNiveau}}</td>
+                    <td>{{User.Nickname}}</td>
+                    <td>
+                        <a href="{{ path('admin_user_edit', {'id': User.id})}} " class="btn btn-primary" title="Editer l'utilisateur"><i class="fa fa-edit"></i></a>
+                        {% if app.user.roles[0]== "admin" %}
+                        <a href="{{ path('admin_user_delete', {'id':User.id})}}" class="btn btn-danger" title="Supprimer l'utilisateur"><i class="fa fa-trash"></i></a>
+                        {% endif %}
+                        <a href="{{path ('admin_user_resetpassword', {'id': User.id})}}" class="btn btn-info" title="Reset le mot de passe"><i class="fa fa-unlock"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
-<h2 class="my-5">Ajouter un Utilisateur</h2>
+
+<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-form-title" style="background-image: url(https://cdn.discordapp.com/attachments/432635481294110730/504329349407965185/44713593_589925361410595_2124829258881695744_n.png);">
+					<span class="login100-form-title-1">
+						Ajouter un Utilisateur
+					</span>
+				</div>
+
+                {{form_start(form,{'attr':{'class':"login100-form validate-form"}})}}
+					<div class="wrap-input100 validate-input m-b-26" >
+						<span class="label-input100">Prénom</span>
+						{{form_row(form.prenomUser, {'attr':{'placeholder':"Prénom.."}})}}
+						<span class="focus-input100"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input m-b-18" >
+						<span class="label-input100">Nom</span>
+						{{form_row(form.nomUser, {'attr':{'placeholder':"Nom.."}})}}
+						<span class="focus-input100"></span>
+                    </div>
+                    
+                    <div class="wrap-input100 validate-input m-b-18" >
+                        <span class="label-input100">Téléphone</span>
+                         {{form_row(form.telUser, {'attr':{'placeholder':"Tel.."}})}}
+                         <span class="focus-input100"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-18" >
+                        <span class="label-input100">Pseudo</span>
+                        {{form_row(form.nickname, {'attr':{'placeholder':"pseudo.."}})}}
+                        <span class="focus-input100"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-18" >
+                        <span class="label-input100">Grade</span>
+                        {{form_row(form.grade, {'attr':{'placeholder':"grade.."}})}}
+                        <span class="focus-input100"></span>
+                    </div>
+                
+                    <div class="wrap-input100 validate-input m-b-18" >
+                        <span class="label-input100">Rang</span>
+                        {{form_row(form.niveau, {'attr':{'placeholder':"rang.."}})}}
+                        <span class="focus-input100"></span>
+                    </div>
+
+					<div class="container-login100-form-btn">
+                            <button type="submit" class="btn btn-success login100-form-btn mt-4">Enregistrer</button>
+					</div>
+                    {{form_end(form)}}
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+{# <h2 class="my-5">Ajouter un Utilisateur</h2>
 {{form_start(form)}}
 {{form_widget(form)}}
-<button type="submit" class="btn btn-success">Enregistrer</button>
-{{form_end(form)}}
+<button type="submit" class="btn btn-success login100-form-btn">Enregistrer</button>
+{{form_end(form)}} #}
 
 {% endblock %}

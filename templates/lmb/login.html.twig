@@ -1,13 +1,34 @@
 {% extends "base.html.twig" %}
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/login.css') }}">
+{% endblock %}
                     {% block body %}
 
-                    <form action = "{{ path('login') }}" method="post">
-                        <div class="form_group">
-                            <input placeholder="vote pseudo.." required name="_username" type:"text" class="form-control">
-                        </div>
-                        <div class="form_group">
-                                <input placeholder="vote mot de passe.." required name="_password" type="password" class="form-control">
+                    <div class="wrapper ">
+                        <div id="formContent">
+                          <!-- Tabs Titles -->
+                      
+                          <!-- Icon -->
+                          <div class="fadeIn first">
+                            <img src="https://cdn.discordapp.com/attachments/505075324191768577/505075841630208010/LogoLMB.png" id="icon" alt="User Icon" />
+                            <h1 class="mb-2">Compta LMB</h1>
+                          </div>
+
+                            <form action = "{{ path('login') }}" method="post">
+                                <div class="form_group">
+                                    <input placeholder="pseudo.." required name="_username" type:"text" class=" fadeIn second mb-2 ">
+                                </div>
+                                <div class="form_group">
+                                    <input placeholder="mot de passe.." required name="_password" type="password" class=" fadeIn third mb-2">
+                                </div>
+                                <button type="submit" class="btn btn-success fadeIn fourth mb-2">Connexion</button>
+                            </form>
+                            <!-- Remind Passowrd -->
+                            <div id="formFooter">
+                                <a class="underlineHover" href="#">Discord LMB</a>
                             </div>
-                            <button type="submit" class="btn btn-success">Connexion</button>
-                    </form>
+                        </div>
+                    </div>
+
                     {% endblock %}
