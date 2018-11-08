@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\Historique;
 use App\Form\RegistrationType;
 use App\Repository\UserRepository;
+use App\Repository\HistoriqueRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,6 +34,13 @@ class AdminController extends AbstractController
             $user->setFirstLogin(1);
             $manager->persist($user);
             $manager->flush();
+
+            $this->addFlash(
+                'success',
+                "L'utilisateur <strong>{$user->getNickname()}</strong> a bien été créé"
+            );
+
+
         }
         $role=$this->getUser()->getRoles()[0];
         if($role === "admin" || $role ==="DRH"){
@@ -223,6 +231,32 @@ class AdminController extends AbstractController
     }
 
 
+     /**
+     * @Route("/admin/historique", name="historique")
+     */
+    public function historique(HistoriqueRepository $repo)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user=$this->getUser()->getRoles()[0];
+        if($user === "admin"){
+            
+            return $this->render('admin/historique.html.twig',[
+                'historique'=>$repo->findAll()
+            ]);
+
+       
+        }
+        else {
+            $this->addFlash(
+                'danger',
+                "Vous n'êtes pas autorisé à accéder à cette page "
+            );
+            return $this->redirectToRoute("error403");
+
+        }
+
+
+    }
 
     
 

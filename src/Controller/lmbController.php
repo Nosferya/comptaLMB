@@ -79,7 +79,7 @@ class lmbController extends AbstractController
     /**
      * @Route("/saisie", name="saisie")
      */
-    public function saisie(ObjectManager $manager, Request $request, SaisieRepository $repo)
+    public function saisie(ObjectManager $manager, Request $request, SaisieRepository $repo, UserRepository $userrepo)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user =$this->getUser();
@@ -135,7 +135,8 @@ class lmbController extends AbstractController
         return $this->render('lmb/saisie.html.twig',[
             'Saisie' =>$form->CreateView(),
             'user'=>$liste,
-            'allSaisie'=>$listerepo
+            'allSaisie'=>$listerepo,
+            'userrepo'=>$user->getPrimeUser(),
 
             
         ]);

@@ -41,6 +41,11 @@
                           <a class="nav-link" href="{{path ('settings')}}">Settings</a>
                         </li>
                         {% endif %}
+                        {% if app.user.roles[0]== "admin" %}
+                        <li class="nav-item">
+                          <a class="nav-link" href="{{path ('historique')}}">Historique</a>
+                        </li>
+                        {% endif %}
                       </ul>
                     </div>
                   </nav>
@@ -68,6 +73,6 @@
                   <script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
                   <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>
                   
-                    {% endblock %}
-    </body>
+                </body>
+                {% endblock %}
 </html>
