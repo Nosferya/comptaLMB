@@ -5,88 +5,112 @@
 {{parent()}}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+{{parent()}}
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/saisie.css') }}">
 
 {% endblock %}
 
 {% form_theme Saisie 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
-{{form_start(Saisie)}}
-{{form_widget(Saisie)}}
-<button type="submit" class="btn btn-success">Valider la tournée</button>
+
+
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <div class="login100-form-title" style="background-image: url(https://cdn.discordapp.com/attachments/505075324191768577/505075890946965515/AfficheBieresineLMB.jpg);">
+                <span class="login100-form-title-1">
+                    Rentrer une tournée
+                </span>
+            </div>
+
+{{form_start(Saisie,{'attr':{'class':"login100-form validate-form"}})}}
+
+<div class="wrap-input100 validate-input m-b-26" >
+    <span class="label-input100">Produits vendus</span>
+    {{form_row(Saisie.venteGrossiste, {'attr':{'placeholder':"Tournée.."}})}}
+    
+    <span class="focus-input100"></span>
+</div>
+<div class="container-login100-form-btn">
+    <button type="submit" class="btn btn-success login100-form-btn mt-4">Valider La tournée</button>
+</div>
 {{form_end(Saisie)}}
+        </div>
+    </div>
+</div>
+
 
 <div class="row">
     <div class=" mt-5 col-lg-3" >
         <h1 class="text-center">Prime actuelle</h1>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th class="text-center">Prime</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th class="text-center">{{userrepo}}</th>
-                </tr>
-            </tbody>
-        </table>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <th class="text-center display-4">{{userrepo}}$</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
     </div>
 
 
     <div class="col-lg-9">
         <h1 class="mt-5">Mes saisies</h1>
+        <div class="table-responsive">
+            <table class="table table-hover display " id="table_id">
+                <thead class=" text-dark">
+                    <tr>
+                        <th>Date de la saisie</th>
+                        <th>Vente</th>
+                        <th>Modifications</th>
+                    </tr>
+                </thead>
 
-        <table class="table table-bordered display " id="table_id">
-            <thead class=" text-dark">
+                <tbody>
+                    {% for Users in user %}
+                    <tr>
+                        <td>{{Users.dateSaisie | date ('d/m/Y H:i')}}</td>
+                        <td>{{Users.venteGrossiste}}</td>
+                        <td>
+                            <a href="{{path ('user_saisie_edit', {'id': Users.id}) }}" class="btn btn-primary" title="Editer la saisie"><i
+                                    class="fa fa-edit"></i></a>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if app.user.roles[0]== "admin" or app.user.roles[0]== "DRH" %}
+<hr class="mt-5" style="border-color:azure">
+<h1 class="mt-5">Saisies des Utilisateurs - PARTIE ADMIN</h1>
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_admin">
+            <thead class="text-dark">
                 <tr>
+                    <th>Prénom</th>
+                    <th>Nom</th>
                     <th>Date de la saisie</th>
                     <th>Vente</th>
-                    <th>Modifications</th>
                 </tr>
             </thead>
-
             <tbody>
-                {% for Users in user %}
+                {% for allsaisie in allSaisie %}
                 <tr>
-                    <th>{{Users.dateSaisie | date ('d/m/Y H:i')}}</th>
-                    <th>{{Users.venteGrossiste}}</th>
-                    <th>
-                        <a href="{{path ('user_saisie_edit', {'id': Users.id}) }}" class="btn btn-primary" title="Editer la saisie"><i
-                                class="fa fa-edit"></i></a>
-
-                    </th>
+                    <td>{{allsaisie.getUser.prenomUser}}</td>
+                    <td>{{allsaisie.getUser.nomUser}}</td>
+                    <td>{{allsaisie.dateSaisie | date ('d/m/Y H:i')}}</td>
+                    <td>{{allsaisie.venteGrossiste}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</div>
-
-{% if app.user.roles[0]== "admin" or app.user.roles[0]== "DRH" %}
-<hr class="mt-5" style="border-color:black">
-<h1 class="mt-5">Saisies des Utilisateurs - PARTIE ADMIN</h1>
-
-<table class="table table-bordered" id="table_admin">
-    <thead class="text-dark">
-        <tr>
-            <th>Prénom</th>
-            <th>Nom</th>
-            <th>Date de la saisie</th>
-            <th>Vente</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for allsaisie in allSaisie %}
-        <tr>
-            <th>{{allsaisie.getUser.prenomUser}}</th>
-            <th>{{allsaisie.getUser.nomUser}}</th>
-            <th>{{allsaisie.dateSaisie | date ('d/m/Y H:i')}}</th>
-            <th>{{allsaisie.venteGrossiste}}</th>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
 {% endif %}
 {% block javascripts %}

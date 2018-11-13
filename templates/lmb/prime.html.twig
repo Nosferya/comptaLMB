@@ -1,36 +1,43 @@
 {% extends 'base.html.twig' %}
 {% block title %}Primes {% endblock %}
 
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/prime.css') }}">
+{% endblock %}
+
 {% block body %}
 <div class="container-fluid">
         <h1 class="my-5">Gestion des Primes</h1>
     
-        <table class="table table-bordered">
-            <thead class="table-info">
-                <tr>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Prime</th>
-                    <th>Payer la prime</th>
-                </tr>
-            </thead>
-    
-            <tbody>
-                {% for Prime in primes %}
-                {% if Prime.primeUser == 0 or Prime.primeUser =="null" %}
-                {% else %}
-                <tr>
-                    <th>{{Prime.NomUser}}</th>
-                    <th>{{Prime.PrenomUser}}</th>
-                    <th>{{Prime.primeUser}}</th>
-                    <th>
-                            <a href="{{ path ('admin_prime_pay', {'id': Prime.id}) }}" class="btn btn-info" title="Payer la prime"><i class="fas fa-hand-holding-usd"></i></a>
-                    </th>
-                    
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Prime</th>
+                        <th>Payer la prime</th>
+                    </tr>
+                </thead>
+        
+                <tbody>
+                    {% for Prime in primes %}
+                    {% if Prime.primeUser == 0 or Prime.primeUser =="null" %}
+                    {% else %}
+                    <tr>
+                        <th>{{Prime.NomUser}}</th>
+                        <th>{{Prime.PrenomUser}}</th>
+                        <th>{{Prime.primeUser}}</th>
+                        <th>
+                                <a href="{{ path ('admin_prime_pay', {'id': Prime.id}) }}" class="btn btn-info" title="Payer la prime"><i class="fas fa-hand-holding-usd"></i></a>
+                        </th>
+                        
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% endblock %}

@@ -12,9 +12,9 @@ class SaisieType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('venteGrossiste')
-
-        ;
+            ->add('venteGrossiste',null,array(
+                'required'=>true
+            ));
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -1,8 +1,16 @@
 {% extends 'base.html.twig' %}
 {% block title %}Erreur 403. Accès Interdit {% endblock %}
 
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/error403.css') }}">
+{% endblock %}
+
 {% block body %}
 
-<h1 class="text-center">Vous n'avez pas accès à cette page</h1>
+<div class="bggta">
+<h1 class="text-center fontgta">Alerte ! <br/> Vous n'avez pas accès à cette page !</h1>
+</div>
+
 
 {% endblock %}

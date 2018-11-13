@@ -5,34 +5,35 @@
 {{parent()}}
 <link rel="stylesheet" type="text/css"href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/prime.css') }}">
 {% endblock %}
 
 {% block body %}
 
 <h1 class="mt-5">Historique des Primes payées</h1>
+<div class="table-responsive">
+    <table class="table  table-hover display" id = "table_id">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Date du paiement</th>
+                <th>Prime payée</th>
+            </tr>
+        </thead>
 
-<table class="table  table-bordered display" id = "table_id">
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Prenom</th>
-            <th>Date du paiement</th>
-            <th>Prime payée</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for historiques in historique %}
-        <tr>
-            <th>{{historiques.getUser.nomUser}}</th>
-            <th>{{historiques.getUser.prenomUser}}</th>
-            <th>{{historiques.datePaiement | date ('d/m/Y H:i')}}</th>
-            <th>{{historiques.prime}}</th>
-        </tr>
-        {% endfor %}
+        <tbody>
+            {% for historiques in historique %}
+            <tr>
+                <th>{{historiques.getUser.nomUser}}</th>
+                <th>{{historiques.getUser.prenomUser}}</th>
+                <th>{{historiques.datePaiement | date ('d/m/Y H:i')}}</th>
+                <th>{{historiques.prime}}</th>
+            </tr>
+            {% endfor %}
         </tbody>
-        </table>
-
+    </table>
+</div>
 
 
 {% block javascripts %}

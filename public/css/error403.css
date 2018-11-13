@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'Pricedown'; /*a name to be used later*/
+    src: url('../font/pricedown.ttf'); /*URL to font*/
+}
+
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: black;
+    color: azure;
+
+  }
+
+  h1,h2{
+    color:azure;
+}
+
+.fontgta {
+    font-family: 'Pricedown';
+    color:#efcc4a;
+    margin-top:20%;
+    font-size: 50px;
+}
+
+.bggta {
+    background-image: url("https://vignette.wikia.nocookie.net/deathbattlefanon/images/2/2d/Trevor_Philips.png");
+    background-repeat: no-repeat;
+    height: 100vh;
+    
+    
+}

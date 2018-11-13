@@ -1,0 +1,43 @@
+@font-face {
+    font-family: 'Pricedown'; /*a name to be used later*/
+    src: url('../font/pricedown.ttf'); /*URL to font*/
+}
+
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #2a3f54;
+    color: azure;
+
+  }
+
+  h1,h2{
+    color:azure;
+}
+
+.fontgta {
+    font-family: 'Pricedown';
+    color:#efcc4a;
+    margin-top:20%;
+    font-size: 50px;
+}
+
+.bggta {
+    background-image: url("https://vignette.wikia.nocookie.net/deathbattlefanon/images/2/2d/Trevor_Philips.png");
+    background-repeat: no-repeat;
+    height: 100vh;
+    
+}
+
+table,th{
+    color:azure;
+    border-color: black;
+}
+
+tr{
+    color:black;
+}
+
+#table_id_info, #table_admin_info{color:azure;}
+label{color:azure;}
+.dataTables_empty{color:black;}

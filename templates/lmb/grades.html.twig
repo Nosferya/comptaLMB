@@ -1,44 +1,89 @@
 {% block title %}Grades {% endblock %}
 {% extends 'base.html.twig' %}
 {% form_theme formGrade 'bootstrap_4_layout.html.twig' %}
-
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" type="text/css" href="{{ asset('/css/user.css') }}">
+{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
         <h1 class="my-5">Gestion des Grades</h1>
-    
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Nom du grade</th>
-                    <th>Pourcentage Pj</th>
-                    <th>Pourcentage Pnj</th>
-                </tr>
-            </thead>
-    
-            <tbody>
-                {% for Grade in ads %}
-                <tr>
-                    <td>{{Grade.id}}</td>
-                    <td>{{Grade.nomGrade}}</td>
-                    <td>{{Grade.pourcentPj}}</td>
-                    <td>{{Grade.pourcentPnj}}</td>
-                    <td>
-                        <a href="{{ path ('admin_grade_edit',{'id':Grade.id}) }}"class="btn btn-primary"><i class="fa fa-edit"></i></a>
-                        {% if app.user.roles[0]== "admin" %}
-                        <a href="{{ path ('admin_grade_delete', { 'id':Grade.id}) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom du grade</th>
+                        <th>Pourcentage Pj</th>
+                        <th>Pourcentage Pnj</th>
+                        <th>Modifications</th>
+                    </tr>
+                </thead>
+        
+                <tbody>
+                    {% for Grade in ads %}
+                    <tr>
+                        <td>{{Grade.id}}</td>
+                        <td>{{Grade.nomGrade}}</td>
+                        <td>{{Grade.pourcentPj}}%</td>
+                        <td>{{Grade.pourcentPnj}}%</td>
+                        <td>
+                            <a href="{{ path ('admin_grade_edit',{'id':Grade.id}) }}"class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                            {% if app.user.roles[0]== "admin" %}
+                            <a href="{{ path ('admin_grade_delete', { 'id':Grade.id}) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <h2 class="my-5">Ajouter un Grade</h2>
+
+    <div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-form-title" style="background-image: url(https://cdn.discordapp.com/attachments/476383998713790498/510097432965808130/43467131_338923713524117_423530989961084928_n.jpg);">
+					<span class="login100-form-title-1">
+						Ajouter un Grade
+					</span>
+				</div>
+
+                {{form_start(formGrade,{'attr':{'class':"login100-form validate-form"}})}}
+					<div class="wrap-input100 validate-input m-b-26" >
+						<span class="label-input100">Grade</span>
+						{{form_row(formGrade.nomGrade, {'attr':{'placeholder':"nom.."}})}}
+						<span class="focus-input100"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input m-b-18" >
+						<span class="label-input100">Pourcentage PNJ</span>
+						{{form_row(formGrade.pourcentPnj, {'attr':{'placeholder':"Vente PNJ..."}})}}
+						<span class="focus-input100"></span>
+                    </div>
+                    
+                    <div class="wrap-input100 validate-input m-b-18" >
+                        <span class="label-input100">POurcentage Civil</span>
+                         {{form_row(formGrade.pourcentPj, {'attr':{'placeholder':"Vente Civil.."}})}}
+                         <span class="focus-input100"></span>
+                    </div>
+
+
+					<div class="container-login100-form-btn">
+                            <button type="submit" class="btn btn-success login100-form-btn mt-4">Enregistrer</button>
+					</div>
+                    {{form_end(formGrade)}}
+			</div>
+		</div>
+	</div>
+
+
+
+    {# <h2 class="my-5">Ajouter un Grade</h2>
 
 {{form_start(formGrade)}}
 {{form_widget(formGrade)}}
 <button type="submit" class="btn btn-success">Enregistrer un grade</button>
-{{form_end(formGrade)}}
+{{form_end(formGrade)}} #}
 {% endblock %}
