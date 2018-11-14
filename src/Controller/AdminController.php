@@ -23,7 +23,7 @@ class AdminController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
-        $password=$user->setPasswordUser("adminadmin");
+        $password=$user->setPasswordUser("failyv");
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
@@ -212,7 +212,7 @@ class AdminController extends AbstractController
     public function resetpassword(User $user,ObjectManager $manager, UserPasswordEncoderInterface $encoder){
 
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $defaultpassword ="adminadmin";
+        $defaultpassword ="failyv";
         $user->setPasswordUser($defaultpassword);
         $hash = $encoder->encodePassword($user, $user->getPasswordUser());
         $user->setPasswordUser($hash);
@@ -223,7 +223,7 @@ class AdminController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Le mot de passe de l'utilisater {$user->getNickname()} a bien été ré-initialité en 'adminadmin' !"
+                "Le mot de passe de l'utilisater {$user->getNickname()} a bien été ré-initialité  !"
             );
 
             return $this->redirectToRoute('admin');
