@@ -37,12 +37,15 @@ class lmbController extends AbstractController
      */
     public function redirectUser()
     {
+        //function that allows to check if the user need to reset his own password
        $user=$this->getUser();
        $session =$user->getFirstLogin();
        if($session== 1){
+           //if $session = 1 redirect to the reset password form
            return $this->redirectToRoute('resetPassword');
        }
        else {
+           //if $session = 0 redirect to the main page after login
            return $this->redirectToRoute('saisie');
        }
     }
@@ -52,17 +55,21 @@ class lmbController extends AbstractController
      */
     public function resetpassword(ObjectManager $manager, Request $request, UserPasswordEncoderInterface $encoder)
     {
+        //function when administrator reset the password of an user
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user =$this->getUser();
         $id = $user->getId();
+        //variable $id contain the user's id of the current session
         $form = $this->CreateForm(ResetPasswordType::class);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
             $ModifyUser= $manager->getRepository(User::class)->find($id);
+            //when form is submitted $modifyuser contain the user corresponding to the $id
             $password=$form->get('passwordUser')->getData();
             $hash = $encoder->encodePassword($ModifyUser ,$password);
             $ModifyUser->setPasswordUser($hash);
             $ModifyUser->setFirstLogin(0);
+            //when the function is complete set the firstlogin field corresponding to the user to 0 , that way user do not have to resrt his password on his next connection
             
 
             $manager->persist($ModifyUser);
@@ -82,9 +89,11 @@ class lmbController extends AbstractController
      */
     public function saisie(ObjectManager $manager, Request $request, SaisieRepository $repo, UserRepository $userrepo)
     {
+        //function that allow a user to enter the number of products he selled and calculate automatically his wage according to other parameters
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user =$this->getUser();
         $id = $user->getId();
+        //create a new saisie for the user
         $saisie = new Saisie();
         $form = $this->CreateForm(SaisieType::class, $saisie);
         $form->handleRequest($request);
@@ -97,8 +106,10 @@ class lmbController extends AbstractController
            $vente =$saisie->getVenteGrossiste();
             $prix= $manager->getRepository(Setting::class)->findOneBy([
                 'id'=> 1,
+        
 
             ]);
+            //variable $vente and $prix are the other parameters needed to calculate the wage of the user
             $prime=$entity->getPrimeUser();
             $prix=$prix->getReventeUnitaire();
 
@@ -111,6 +122,7 @@ class lmbController extends AbstractController
             $calcul = $prix * $vente;
             $calcul=$calcul*($pourcent/100);
             $calcul=$calcul+$prime;
+            //variable $calcul calculate the wage of the user according to other parameters
             
 
             $entity->setPrimeUser($calcul);
@@ -154,6 +166,8 @@ class lmbController extends AbstractController
      * @return Response
      */
     public function editSaisie(Saisie $saisie, Request $request, ObjectManager $manager){
+
+        //this function allows a user to modify his own number of products selled
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $saisieNow = $saisie->getVenteGrossiste();
@@ -241,6 +255,7 @@ class lmbController extends AbstractController
      */
      public function prime(UserRepository $repo)
      {
+         //this function is to show all wages of user to an administrator
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user=$this->getUser()->getRoles()[0];
         if($user === "admin" || $user ==="comptable"){
