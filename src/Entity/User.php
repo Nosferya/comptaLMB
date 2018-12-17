@@ -42,7 +42,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\Length(min = "8", minMessage= "Votre mot de passe doit contenir 8 caractères")
+     * @Assert\Length(min = "6", minMessage= "Votre mot de passe doit contenir 8 caractères")
      */
     private $passwordUser;
 
@@ -102,7 +102,7 @@ class User implements UserInterface
     private $saisies;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Historique", mappedBy="User")
+     * @ORM\OneToMany(targetEntity="App\Entity\Historique", mappedBy="User", cascade={"remove"})
      */
     private $historiques;
 

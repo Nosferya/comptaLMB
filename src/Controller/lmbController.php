@@ -55,7 +55,7 @@ class lmbController extends AbstractController
      */
     public function resetpassword(ObjectManager $manager, Request $request, UserPasswordEncoderInterface $encoder)
     {
-        //function when administrator reset the password of an user
+        //function that allow a user to reset his own password
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user =$this->getUser();
         $id = $user->getId();
@@ -69,7 +69,8 @@ class lmbController extends AbstractController
             $hash = $encoder->encodePassword($ModifyUser ,$password);
             $ModifyUser->setPasswordUser($hash);
             $ModifyUser->setFirstLogin(0);
-            //when the function is complete set the firstlogin field corresponding to the user to 0 , that way user do not have to resrt his password on his next connection
+            //when the function is complete set the firstlogin field corresponding to the user to 0 , 
+            //that way user do not have to reset his password on his next connection
             
 
             $manager->persist($ModifyUser);

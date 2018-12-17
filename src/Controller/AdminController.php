@@ -20,17 +20,22 @@ class AdminController extends AbstractController
      */
     public function index(Request $request,ObjectManager $manager, UserPasswordEncoderInterface $encoder, UserRepository $repo)
     {
+        //function that allow to create a new user
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = new User();
+        //create a new user in $user
         $form = $this->createForm(RegistrationType::class, $user);
         $password=$user->setPasswordUser("failyv");
+        //set the default password to the user
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
             $hash = $encoder->encodePassword($user, $user->getPasswordUser());
             $user->setPasswordUser($hash);
+            //hash the user's password
             $now = new \DateTime();
             $user->setDateInscription($now);
+            //set the creation date of the user
             $user->setFirstLogin(1);
             $manager->persist($user);
             $manager->flush();
@@ -44,6 +49,7 @@ class AdminController extends AbstractController
         }
         $role=$this->getUser()->getRoles()[0];
         if($role === "admin" || $role ==="DRH"){
+            //if the user's role is  admin or DRH he can create an user
             
             return $this->render('admin/index.html.twig', [
                 'form' =>$form->CreateView(),
@@ -53,6 +59,7 @@ class AdminController extends AbstractController
 
         }
         else {
+            //else he is redirected to an error page
             $this->addFlash(
                 'danger',
                 "Vous n'êtes pas autorisé à accéder à cette page "
@@ -210,14 +217,17 @@ class AdminController extends AbstractController
      * @return Response
      */
     public function resetpassword(User $user,ObjectManager $manager, UserPasswordEncoderInterface $encoder){
-
+        //function that allow a user to reset his own password
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $defaultpassword ="failyv";
+        //the default password is failyv
         $user->setPasswordUser($defaultpassword);
         $hash = $encoder->encodePassword($user, $user->getPasswordUser());
         $user->setPasswordUser($hash);
+        //use brcrypt to hash the user's password
 
         $user->setFirstLogin(1);
+        //then set his field firstlogin to 1 to allow him to be redirect to the reset password form
         $manager->persist($user);
         $manager->flush();
 
